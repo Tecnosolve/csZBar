@@ -15,26 +15,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    //[button setTitle:@"Flash" forState:UIControlStateNormal];
-    [button sizeToFit];
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    //[button setContentEdgeInsets:UIEdgeInsetsMake(20, 30, 20, 30)];
-    CGRect frame;
-    
-    if (screenRect.size.height > (screenRect.size.width)) {
-        frame = CGRectMake(0,0, screenRect.size.width*(0.15), screenRect.size.height*0.15);
-    }else{
-        frame = CGRectMake(0,0, screenRect.size.width*(0.10), screenRect.size.height*0.20);
-    }
-    
-    button.frame =frame;
-    button.layer.cornerRadius = 10;
-    button.clipsToBounds = YES;
-    
-    [button addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
+
+    CGRect frame = self.readerView.frame;
+    frame.size.height += 55;
+    self.readerView.frame = frame;
+    self.showsCameraControls = NO;
+    self.showsZBarControls = NO;
+
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -74,6 +61,28 @@
         [polygonView addSubview:lineView];
         self.cameraOverlayView = polygonView;
     }
+}
+
+- (NSUInteger) supportedInterfaceOrientations {
+    // Return a bitmask of supported orientations. If you need more,
+    // use bitwise or (see the commented return).
+    return UIInterfaceOrientationMaskPortrait;
+    // return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
+- (UIInterfaceOrientation) preferredInterfaceOrientationForPresentation {
+    // Return the orientation you'd prefer - this is what it launches to. The
+    // user can still rotate. You don't have to implement this method, in which
+    // case it launches in the current orientation
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    
+    // Use this to allow upside down as well
+    //return (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
 }
 
 @end

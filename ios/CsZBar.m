@@ -2,6 +2,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import "AlmaZBarReaderViewController.h"
 
+#define UIColorFromRGB(rgbValue) [UIColor \
+       colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+       green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+       blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 #pragma mark - State
 
 @interface CsZBar ()
@@ -25,17 +30,17 @@
     self.scanInProgress = NO;
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    return;
-}
+// - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+//     return;
+// }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
+// - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//     return YES;
+// }
 
 #pragma mark - Plugin API
 
-- (void)scan: (CDVInvokedUrlCommand*)command; 
+- (void)scan: (CDVInvokedUrlCommand*)command;
 {
     if (self.scanInProgress) {
         [self.commandDelegate
@@ -62,7 +67,7 @@
         self.scanReader.cameraFlashMode = UIImagePickerControllerCameraFlashModeOn;
 
         NSString *flash = [params objectForKey:@"flash"];
-        
+
         if ([flash isEqualToString:@"on"]) {
             self.scanReader.cameraFlashMode = UIImagePickerControllerCameraFlashModeOn;
         } else if ([flash isEqualToString:@"off"]) {
@@ -71,43 +76,73 @@
             self.scanReader.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
         }
 
-        // Hack to hide the bottom bar's Info button... originally based on http://stackoverflow.com/a/16353530
-	NSInteger infoButtonIndex;
-        if ([[[UIDevice currentDevice] systemVersion] compare:@"10.0" options:NSNumericSearch] != NSOrderedAscending) {
-            infoButtonIndex = 1;
-        } else {
-            infoButtonIndex = 3;
-        }
-        UIView *infoButton = [[[[[self.scanReader.view.subviews objectAtIndex:2] subviews] objectAtIndex:0] subviews] objectAtIndex:infoButtonIndex];
-        [infoButton setHidden:YES];
-
+        // // Hack to hide the bottom bar's Info button... originally based on http://stackoverflow.com/a/16353530
+	    // NSInteger infoButtonIndex;
+        // if ([[[UIDevice currentDevice] systemVersion] compare:@"10.0" options:NSNumericSearch] != NSOrderedAscending) {
+        //     infoButtonIndex = 1;
+        // } else {
+        //     infoButtonIndex = 3;
+        // }
+        
         //UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem]; [button setTitle:@"Press Me" forState:UIControlStateNormal]; [button sizeToFit]; [self.view addSubview:button];
         CGRect screenRect = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenRect.size.width;
         CGFloat screenHeight = screenRect.size.height;
-        
-        BOOL drawSight = [params objectForKey:@"drawSight"] ? [[params objectForKey:@"drawSight"] boolValue] : true;
-        UIToolbar *toolbarViewFlash = [[UIToolbar alloc] init];
-        
-        //The bar length it depends on the orientation
-        toolbarViewFlash.frame = CGRectMake(0.0, 0, (screenWidth > screenHeight ?screenWidth:screenHeight), 44.0);
-        toolbarViewFlash.barStyle = UIBarStyleBlackOpaque;
-        UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
-        
-        NSArray *buttons = [NSArray arrayWithObjects: buttonFlash, nil];
-        [toolbarViewFlash setItems:buttons animated:NO];
-        [self.scanReader.view addSubview:toolbarViewFlash];
 
-        if (drawSight) {
-            CGFloat dim = screenWidth < screenHeight ? screenWidth / 1.1 : screenHeight / 1.1;
-            UIView *polygonView = [[UIView alloc] initWithFrame: CGRectMake  ( (screenWidth/2) - (dim/2), (screenHeight/2) - (dim/2), dim, dim)];
+        BOOL drawFlashToggleButton = [params objectForKey:@"drawFlashToggleButton"] ? [[params objectForKey:@"drawFlashToggleButton"] boolValue] : false;
+    
+        UIToolbar *toolbarView = [[UIToolbar alloc] init];
+        toolbarView.frame = CGRectMake(0.0, 0, screenWidth, 44.0);
+        toolbarView.barStyle = UIBarStyleBlackOpaque;
+
+        UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        UIBarButtonItem *buttonCancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancelar" style:UIBarButtonItemStyleDone target:self action:@selector(cancelAndDismiss)];
+
+        if(drawFlashToggleButton){
+
+            //The bar length it depends on the orientation
+            UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Ativar Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
+            NSMutableArray *buttons = [NSMutableArray arrayWithObjects: buttonFlash, flexible, buttonCancel, nil];
+            [toolbarView setItems:buttons animated:NO];
+            [self.scanReader.view addSubview:toolbarView];
+
+
+        }else{
             
-            UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0,dim / 2, dim, 1)];
-            lineView.backgroundColor = [UIColor redColor];
-            [polygonView addSubview:lineView];
-
-            self.scanReader.cameraOverlayView = polygonView;
+            NSMutableArray *buttons = [NSMutableArray arrayWithObjects: flexible, buttonCancel, nil];
+            [toolbarView setItems:buttons animated:NO];
+            [self.scanReader.view addSubview:toolbarView];
+        
         }
+
+        BOOL drawAddManuallyButton = [params objectForKey:@"drawAddManuallyButton"] ? [[params objectForKey:@"drawAddManuallyButton"] boolValue] : false;
+
+        //if (drawAddManuallyButton) {
+
+            UIButton *addManuallyButton = [[UIButton alloc] initWithFrame:CGRectMake(0, screenHeight - 50, screenWidth, 50)];
+            addManuallyButton.backgroundColor = UIColorFromRGB(0x76c043);
+            //addManuallyButton.frame = CGRectMake(210, 285, 100, 18);
+            [addManuallyButton setTitle:@"Adicionar Manualmente" forState:UIControlStateNormal];
+            [addManuallyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [addManuallyButton addTarget:self action:@selector(addManually) forControlEvents:UIControlEventTouchUpInside];
+            //addManuallyButton.frame = CGRectMake(0, self.scanReader.view.frame.size.height - 100, self.scanReader.view.frame.size.width, 100);
+            [self.scanReader.view addSubview:addManuallyButton];
+            [self.scanReader.view bringSubviewToFront: addManuallyButton];
+
+        //}
+
+        BOOL drawSight = [params objectForKey:@"drawSight"] ? [[params objectForKey:@"drawSight"] boolValue] : false;
+
+        // if (drawSight) {
+        //     CGFloat dim = screenWidth < screenHeight ? screenWidth / 1.1 : screenHeight / 1.1;
+        //     UIView *polygonView = [[UIView alloc] initWithFrame: CGRectMake  ( (screenWidth/2) - (dim/2), (screenHeight/2) - (dim/2), dim, dim)];
+
+        //     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0,dim / 2, dim, 1)];
+        //     lineView.backgroundColor = [UIColor redColor];
+        //     [polygonView addSubview:lineView];
+
+        //     self.scanReader.cameraOverlayView = polygonView;
+        // }
 
         [self.viewController presentViewController:self.scanReader animated:YES completion:nil];
     }
@@ -115,7 +150,7 @@
 
 - (void)toggleflash {
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    
+
     [device lockForConfiguration:nil];
     if (device.torchAvailable == 1) {
         if (device.torchMode == 0) {
@@ -126,8 +161,17 @@
             [device setFlashMode:AVCaptureFlashModeOff];
         }
     }
-    
+
     [device unlockForConfiguration];
+}
+
+- (void)addManually{
+    [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
+        self.scanInProgress = NO;
+        [self sendScanResult: [CDVPluginResult
+                                resultWithStatus: CDVCommandStatus_ERROR
+                                messageAsString: @"add_manually"]];
+    }];
 }
 
 #pragma mark - Helpers
@@ -146,9 +190,9 @@
     if ([self.scanReader isBeingDismissed]) {
         return;
     }
-    
+
     id<NSFastEnumeration> results = [info objectForKey: ZBarReaderControllerResults];
-    
+
     ZBarSymbol *symbol = nil;
     for (symbol in results) break; // get the first result
 
@@ -157,6 +201,15 @@
         [self sendScanResult: [CDVPluginResult
                                resultWithStatus: CDVCommandStatus_OK
                                messageAsString: symbol.data]];
+    }];
+}
+
+- (void) cancelAndDismiss {
+    [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
+        self.scanInProgress = NO;
+        [self sendScanResult: [CDVPluginResult
+                                resultWithStatus: CDVCommandStatus_ERROR
+                                messageAsString: @"cancelled"]];
     }];
 }
 

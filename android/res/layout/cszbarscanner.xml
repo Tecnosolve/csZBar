@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/csZbarScannerView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/csZbarScannerBackground" >
 
-    <TextView android:id="@+id/csZbarScannerTitle"
+    <TextView
+        android:id="@+id/csZbarScannerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:paddingTop="15dp"
+        android:background="@color/csZbarScannerTextBackground"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:paddingBottom="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:gravity="center"
+        android:paddingTop="15dp"
         android:text="@string/csZbarScannerTitle"
         android:textColor="@color/csZbarScannerTextColor"
-        android:background="@color/csZbarScannerTextBackground"
-        android:fontFamily="sans-serif-light"
-        android:textSize="15pt" />
+        android:textSize="15pt"
+        android:visibility="invisible" />
 
-    <TextView android:id="@+id/csZbarScannerInstructions"
-        android:layout_gravity="center|bottom"
+    <TextView
+        android:id="@+id/csZbarScannerInstructions"
         android:layout_width="296dp"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:layout_gravity="center|bottom"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:paddingBottom="15dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:gravity="center"
-        android:textSize="8pt"
+        android:paddingTop="5dp"
+        android:text="@string/csZbarScannerInstructions"
         android:textColor="@color/csZbarScannerTextColor"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/csZbarScannerInstructions" />
+        android:textSize="8pt"
+        android:visibility="invisible" />
 
     <RelativeLayout android:id="@+id/csZbarScannerSightContainer"
         android:layout_width="wrap_content"
@@ -49,17 +54,33 @@
             android:background="#ff0000" />
 
         <ImageButton
+            android:id="@+id/imageButton"
             android:layout_width="60dp"
             android:layout_height="70dp"
-            android:id="@+id/imageButton"
-            android:src="@drawable/camera_flash"
-            android:background="@color/csZbarScannerTextBackground"
-            android:onClick="toggleFlash"
-            android:longClickable="true"
-            android:visibility="visible"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:background="@color/csZbarScannerTextBackground"
+            android:longClickable="true"
+            android:onClick="toggleFlash"
+            android:src="@drawable/camera_flash"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:background="#76C043"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:text="Digital Manualmente"
+            android:textColor="#FFFFFF"
+            android:onClick="onBack"
+            android:textSize="20sp" />
 
     </RelativeLayout>
 

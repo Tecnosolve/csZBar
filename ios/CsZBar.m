@@ -1,6 +1,12 @@
 #import "CsZBar.h"
 #import <AVFoundation/AVFoundation.h>
 #import "AlmaZBarReaderViewController.h"
+#import "ToneGenerator.h"
+
+#define TRANSMIT_LENGTH 200
+
+#define BASE 480 //18000 Hz seems to be detectable (hearable?)
+                   //140-160 Hz is not quite hearable
 
 #define UIColorFromRGB(rgbValue) [UIColor \
        colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -195,6 +201,9 @@
 
     ZBarSymbol *symbol = nil;
     for (symbol in results) break; // get the first result
+
+    ToneGenerator *toneGenerator = [[ToneGenerator alloc] init];
+    [toneGenerator playFrequency:BASE forDuration:TRANSMIT_LENGTH];
 
     [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
         self.scanInProgress = NO;

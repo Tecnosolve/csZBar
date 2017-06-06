@@ -74,7 +74,7 @@
 
         <!-- Declare Camera Usage for iOS10+ -->
         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-            <string>For Barcode Scanning</string>
+            <string>Utilizado para leitura de códigos de barra.</string>
         </config-file>
 
         <framework src="AVFoundation.framework" />
@@ -85,6 +85,8 @@
         <source-file src="ios/libzbar.a" framework="true" custom="true"/>
         <source-file src="ios/CsZBar.m" />
         <header-file src="ios/CsZBar.h" />
+        <header-file src="ios/ToneGenerator/ToneGenerator.h" />
+        <source-file src="ios/ToneGenerator/ToneGenerator.m" />
         <source-file src="ios/AlmaZBarReaderViewController.m" />
         <header-file src="ios/AlmaZBarReaderViewController.h" />
         <header-file src="ios/ZBarSDK/ZBarCameraSimulator.h" />

@@ -32,38 +32,41 @@ public class ZBar extends CordovaPlugin {
     private boolean isInProgress = false;
     private CallbackContext scanCallbackContext;
 
-
-
     //permissions
-    private String [] permissions = { Manifest.permission.CAMERA };
+    private String[] permissions = {Manifest.permission.CAMERA};
     private JSONObject params;
 
 
     // Plugin API ------------------------------------------------------
 
     @Override
-    public boolean execute (String action, JSONArray args, CallbackContext callbackContext)
-    throws JSONException
-    {
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
+            throws JSONException {
 
-        scanCallbackContext = callbackContext;
-        params = args.optJSONObject(0);
 
-        if(hasPermission()){
-            if(action.equals("scan")) {
-                if(isInProgress) {
+        if (hasPermission()) {
+            if (action.equals("scan")) {
+                if (isInProgress) {
                     callbackContext.error("A scan is already in progress!");
                 } else {
+                    scanCallbackContext = callbackContext;
                     isInProgress = true;
-                    createScanActivity();
+                    JSONObject params = args.optJSONObject(0);
+
+                    Context appCtx = cordova.getActivity().getApplicationContext();
+                    Intent scanIntent = new Intent(appCtx, ZBarScannerActivity.class);
+                    scanIntent.putExtra(ZBarScannerActivity.EXTRA_PARAMS, params.toString());
+                    cordova.startActivityForResult(this, scanIntent, SCAN_CODE);
                 }
+                return true;
             } else {
                 return false;
             }
-        }else{
+        } else {
             PermissionHelper.requestPermissions(this, 0, permissions);
+            return true;
         }
-        return true;
+    }
 
 //        if(action.equals("scan")) {
 //            if(isInProgress) {
@@ -82,21 +85,11 @@ public class ZBar extends CordovaPlugin {
 //        } else {
 //            return false;
 //        }
-    }
-
-    private void createScanActivity(){
-
-        Context appCtx = cordova.getActivity().getApplicationContext();
-        Intent scanIntent = new Intent(appCtx, ZBarScannerActivity.class);
-        scanIntent.putExtra(ZBarScannerActivity.EXTRA_PARAMS, params.toString());
-        cordova.startActivityForResult(this, scanIntent, SCAN_CODE);
-
-    }
 
     /**
      * check application's permissions
      */
-    public boolean hasPermission() {
+    private boolean hasPermission() {
         for(String p : permissions)
         {
             if(!PermissionHelper.hasPermission(this, p))

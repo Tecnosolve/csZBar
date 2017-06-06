@@ -56,6 +56,7 @@ implements SurfaceHolder.Callback {
     // Public Constants ------------------------------------------------
 
     public static final String EXTRA_QRVALUE = "qrValue";
+    public static final String EXTRA_CANCELLED = "cancelledValue";
     public static final String EXTRA_PARAMS = "params";
     public static final int RESULT_ERROR = RESULT_FIRST_USER + 1;
     private static final int CAMERA_PERMISSION_REQUEST = 1;
@@ -267,6 +268,14 @@ implements SurfaceHolder.Callback {
     {
         setResult(RESULT_CANCELED);
         super.onBackPressed();
+    }
+
+    public void onAddManuallyPressed(View view)
+    {
+        Intent result = new Intent ();
+        result.putExtra(EXTRA_CANCELLED, 1);
+        setResult(Activity.RESULT_CANCELED, result);
+        finish();
     }
 
     // SurfaceHolder.Callback implementation ---------------------------

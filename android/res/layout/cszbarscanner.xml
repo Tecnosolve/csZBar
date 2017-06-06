@@ -77,9 +77,9 @@
             android:background="#76C043"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="Digital Manualmente"
+            android:text="Digitar Manualmente"
             android:textColor="#FFFFFF"
-            android:onClick="onBack"
+            android:onClick="onAddManuallyPressed"
             android:textSize="20sp" />
 
     </RelativeLayout>

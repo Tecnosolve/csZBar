@@ -63,7 +63,14 @@ public class ZBar extends CordovaPlugin {
                     scanCallbackContext.success(barcodeValue);
                     break;
                 case Activity.RESULT_CANCELED:
-                    scanCallbackContext.error("cancelled");
+                    int cancelledValue = result.getIntExtra(ZBarScannerActivity.EXTRA_CANCELLED, 0);
+
+                    if(cancelledValue == 0){
+                        scanCallbackContext.error("cancelled");
+                    }else{
+                        scanCallbackContext.error("add_manually");
+                    }
+
                     break;
                 case ZBarScannerActivity.RESULT_ERROR:
                     scanCallbackContext.error("Scan failed due to an error");

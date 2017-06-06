@@ -215,6 +215,8 @@ implements SurfaceHolder.Callback {
                 camera = Camera.open();
             }
 
+            scannerSurface.setVisibility(View.VISIBLE);
+
             if(camera == null) throw new Exception ("Error: No suitable camera found.");
         } catch (RuntimeException e) {
             //die("Error: Could not open the camera.");
@@ -251,6 +253,7 @@ implements SurfaceHolder.Callback {
     public void onPause ()
     {
         releaseCamera();
+        scannerSurface.setVisibility(View.GONE);
         super.onPause();
     }
 

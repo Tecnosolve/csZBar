@@ -10,7 +10,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.Context;
 
+import android.content.pm.PackageManager;
+import android.Manifest;
+
+import org.apache.cordova.PermissionHelper;
+
+
 import org.cloudsky.cordovaPlugins.ZBarScannerActivity;
+
+
 
 public class ZBar extends CordovaPlugin {
 
@@ -24,32 +32,73 @@ public class ZBar extends CordovaPlugin {
     private boolean isInProgress = false;
     private CallbackContext scanCallbackContext;
 
+    //permissions
+    private String[] permissions = {Manifest.permission.CAMERA};
+    private JSONObject params;
+
 
     // Plugin API ------------------------------------------------------
 
     @Override
-    public boolean execute (String action, JSONArray args, CallbackContext callbackContext)
-    throws JSONException
-    {
-        if(action.equals("scan")) {
-            if(isInProgress) {
-                callbackContext.error("A scan is already in progress!");
-            } else {
-                isInProgress = true;
-                scanCallbackContext = callbackContext;
-                JSONObject params = args.optJSONObject(0);
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
+            throws JSONException {
 
-                Context appCtx = cordova.getActivity().getApplicationContext();
-                Intent scanIntent = new Intent(appCtx, ZBarScannerActivity.class);
-                scanIntent.putExtra(ZBarScannerActivity.EXTRA_PARAMS, params.toString());
-                cordova.startActivityForResult(this, scanIntent, SCAN_CODE);
+
+        if (hasPermission()) {
+            if (action.equals("scan")) {
+                if (isInProgress) {
+                    callbackContext.error("A scan is already in progress!");
+                } else {
+                    scanCallbackContext = callbackContext;
+                    isInProgress = true;
+                    JSONObject params = args.optJSONObject(0);
+
+                    Context appCtx = cordova.getActivity().getApplicationContext();
+                    Intent scanIntent = new Intent(appCtx, ZBarScannerActivity.class);
+                    scanIntent.putExtra(ZBarScannerActivity.EXTRA_PARAMS, params.toString());
+                    cordova.startActivityForResult(this, scanIntent, SCAN_CODE);
+                }
+                return true;
+            } else {
+                return false;
             }
-            return true;
         } else {
-            return false;
+            PermissionHelper.requestPermissions(this, 0, permissions);
+            return true;
         }
     }
 
+//        if(action.equals("scan")) {
+//            if(isInProgress) {
+//                callbackContext.error("A scan is already in progress!");
+//            } else {
+//                isInProgress = true;
+//                scanCallbackContext = callbackContext;
+//                JSONObject params = args.optJSONObject(0);
+//
+//                Context appCtx = cordova.getActivity().getApplicationContext();
+//                Intent scanIntent = new Intent(appCtx, ZBarScannerActivity.class);
+//                scanIntent.putExtra(ZBarScannerActivity.EXTRA_PARAMS, params.toString());
+//                cordova.startActivityForResult(this, scanIntent, SCAN_CODE);
+//            }
+//            return true;
+//        } else {
+//            return false;
+//        }
+
+    /**
+     * check application's permissions
+     */
+    private boolean hasPermission() {
+        for(String p : permissions)
+        {
+            if(!PermissionHelper.hasPermission(this, p))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     // External results handler ----------------------------------------
 

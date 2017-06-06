@@ -15,6 +15,8 @@ import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.AutoFocusCallback;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -68,6 +70,7 @@ implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private ImageScanner scanner;
     private int surfW, surfH;
+    private boolean beep = false;
 
     // Customisable stuff
     String whichCamera;
@@ -92,18 +95,18 @@ implements SurfaceHolder.Callback {
     public void onCreate (Bundle savedInstanceState) {
 
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this.getBaseContext(), Manifest.permission.CAMERA);
-
-        if(permissionCheck == PackageManager.PERMISSION_GRANTED){
-
+//        int permissionCheck = ContextCompat.checkSelfPermission(this.getBaseContext(), Manifest.permission.CAMERA);
+//
+//        if(permissionCheck == PackageManager.PERMISSION_GRANTED){
+//
             setUpCamera();
-
-        } else {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_PERMISSION_REQUEST);
-        }
+//
+//        } else {
+//
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.CAMERA},
+//                    CAMERA_PERMISSION_REQUEST);
+//        }
         super.onCreate(savedInstanceState);
 
 
@@ -425,6 +428,11 @@ implements SurfaceHolder.Callback {
                     Intent result = new Intent ();
                     result.putExtra(EXTRA_QRVALUE, qrValue);
                     setResult(Activity.RESULT_OK, result);
+                    if (!beep){
+                        beep=true;
+                        ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+                        generator.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                    }
                     finish();
                 }
 

@@ -95,18 +95,18 @@ implements SurfaceHolder.Callback {
     public void onCreate (Bundle savedInstanceState) {
 
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this.getBaseContext(), Manifest.permission.CAMERA);
-
-        if(permissionCheck == PackageManager.PERMISSION_GRANTED){
-
+//        int permissionCheck = ContextCompat.checkSelfPermission(this.getBaseContext(), Manifest.permission.CAMERA);
+//
+//        if(permissionCheck == PackageManager.PERMISSION_GRANTED){
+//
             setUpCamera();
-
-        } else {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_PERMISSION_REQUEST);
-        }
+//
+//        } else {
+//
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.CAMERA},
+//                    CAMERA_PERMISSION_REQUEST);
+//        }
         super.onCreate(savedInstanceState);
 
 

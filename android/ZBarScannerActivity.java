@@ -272,7 +272,9 @@ implements SurfaceHolder.Callback {
     @Override
     public void onBackPressed ()
     {
-        setResult(RESULT_CANCELED);
+        Intent result = new Intent ();
+        result.putExtra(EXTRA_CANCELLED, 0);
+        setResult(Activity.RESULT_CANCELED, result);
         super.onBackPressed();
     }
 

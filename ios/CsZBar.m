@@ -128,7 +128,7 @@
             UIButton *addManuallyButton = [[UIButton alloc] initWithFrame:CGRectMake(0, screenHeight - 50, screenWidth, 50)];
             addManuallyButton.backgroundColor = UIColorFromRGB(0x76c043);
             //addManuallyButton.frame = CGRectMake(210, 285, 100, 18);
-            [addManuallyButton setTitle:@"Adicionar Manualmente" forState:UIControlStateNormal];
+            [addManuallyButton setTitle:@"Digite o código de barras" forState:UIControlStateNormal];
             [addManuallyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [addManuallyButton addTarget:self action:@selector(addManually) forControlEvents:UIControlEventTouchUpInside];
             //addManuallyButton.frame = CGRectMake(0, self.scanReader.view.frame.size.height - 100, self.scanReader.view.frame.size.width, 100);

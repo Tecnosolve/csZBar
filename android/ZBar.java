@@ -116,8 +116,10 @@ public class ZBar extends CordovaPlugin {
 
                     if(cancelledValue == 0){
                         scanCallbackContext.error("cancelled");
-                    }else{
+                    }else if(cancelledValue == 1){
                         scanCallbackContext.error("add_manually");
+                    }else if(cancelledValue == 2){
+                        scanCallbackContext.error("per_unit");
                     }
 
                     break;

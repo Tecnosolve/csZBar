@@ -28,6 +28,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.content.pm.PackageManager;
 import android.view.Surface;
@@ -142,6 +143,7 @@ implements SurfaceHolder.Callback {
             String textTitle = params.optString("text_title");
             String textInstructions = params.optString("text_instructions");
             Boolean drawSight = params.optBoolean("drawSight", true);
+            Boolean drawPerUnitButton = params.optBoolean("drawPerUnitButton", false);
             whichCamera = params.optString("camera");
             flashMode = params.optString("flash");
 
@@ -164,6 +166,11 @@ implements SurfaceHolder.Callback {
             TextView view_textInstructions = (TextView) findViewById(getResourceId("id/csZbarScannerInstructions"));
             view_textTitle.setText(textTitle);
             view_textInstructions.setText(textInstructions);
+
+            if(!drawPerUnitButton){
+                ImageButton perUnitButton = (ImageButton) findViewById(getResourceId("id/imageButton"));
+                perUnitButton.setVisibility(View.INVISIBLE);
+            }
 
             // Draw/hide the sight
             if(!drawSight) {
@@ -282,6 +289,14 @@ implements SurfaceHolder.Callback {
     {
         Intent result = new Intent ();
         result.putExtra(EXTRA_CANCELLED, 1);
+        setResult(Activity.RESULT_CANCELED, result);
+        finish();
+    }
+
+    public void onPerUnitButtonPressed(View view)
+    {
+        Intent result = new Intent ();
+        result.putExtra(EXTRA_CANCELLED, 2);
         setResult(Activity.RESULT_CANCELED, result);
         finish();
     }

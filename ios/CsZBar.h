@@ -8,6 +8,7 @@
 - (void)scan: (CDVInvokedUrlCommand*)command;
 - (void)toggleflash;
 - (void)addManually;
+- (void)perUnitButtonPressed;
 - (void)cancelAndDismiss;
 
 @end

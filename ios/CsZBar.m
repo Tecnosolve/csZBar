@@ -95,8 +95,9 @@
         CGFloat screenWidth = screenRect.size.width;
         CGFloat screenHeight = screenRect.size.height;
 
-        BOOL drawFlashToggleButton = [params objectForKey:@"drawFlashToggleButton"] ? [[params objectForKey:@"drawFlashToggleButton"] boolValue] : false;
-    
+        //BOOL drawFlashToggleButton = [params objectForKey:@"drawFlashToggleButton"] ? [[params objectForKey:@"drawFlashToggleButton"] boolValue] : false;
+        BOOL drawPerUnitButton = [params objectForKey:@"drawPerUnitButton"] ? [[params objectForKey:@"drawPerUnitButton"] boolValue] : false;
+        
         UIToolbar *toolbarView = [[UIToolbar alloc] init];
         toolbarView.frame = CGRectMake(0.0, 0, screenWidth, 44.0);
         toolbarView.barStyle = UIBarStyleBlackOpaque;
@@ -104,10 +105,20 @@
         UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
         UIBarButtonItem *buttonCancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancelar" style:UIBarButtonItemStyleDone target:self action:@selector(cancelAndDismiss)];
 
-        if(drawFlashToggleButton){
+        // if(drawFlashToggleButton){
+
+        //     //The bar length it depends on the orientation
+        //     UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Ativar Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
+        //     NSMutableArray *buttons = [NSMutableArray arrayWithObjects: buttonFlash, flexible, buttonCancel, nil];
+        //     [toolbarView setItems:buttons animated:NO];
+        //     [self.scanReader.view addSubview:toolbarView];
+
+
+        // }
+        if(drawPerUnitButton){
 
             //The bar length it depends on the orientation
-            UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Ativar Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
+            UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Produtos Unitários" style:UIBarButtonItemStyleDone target:self action:@selector(perUnitButtonPressed)];
             NSMutableArray *buttons = [NSMutableArray arrayWithObjects: buttonFlash, flexible, buttonCancel, nil];
             [toolbarView setItems:buttons animated:NO];
             [self.scanReader.view addSubview:toolbarView];
@@ -177,6 +188,16 @@
         [self sendScanResult: [CDVPluginResult
                                 resultWithStatus: CDVCommandStatus_ERROR
                                 messageAsString: @"add_manually"]];
+    }];
+}
+
+- (void)perUnitButtonPressed{
+    
+    [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
+        self.scanInProgress = NO;
+        [self sendScanResult: [CDVPluginResult
+                                resultWithStatus: CDVCommandStatus_ERROR
+                                messageAsString: @"per_unit"]];
     }];
 }
 

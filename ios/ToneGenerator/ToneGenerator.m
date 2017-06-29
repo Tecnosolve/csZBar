@@ -142,7 +142,7 @@ OSStatus RenderTone(
 
 {
 	// Fixed amplitude is good enough for our purposes
-	const double amplitude = 1;
+	const double amplitude = 4;
    
 	// Get the tone parameters out of the view controller
 	//ToneGeneratorViewController *viewController = (ToneGeneratorViewController *)inRefCon;

@@ -79,7 +79,7 @@
             android:background="@color/csZbarScannerTextBackground"
             android:longClickable="true"
             android:onClick="onPerUnitButtonPressed"
-            android:src="@drawable/camera_flash"
+            android:src="@drawable/per_unit_products"
             android:visibility="visible" />
 
     </RelativeLayout>

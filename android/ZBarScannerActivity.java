@@ -433,6 +433,7 @@ implements SurfaceHolder.Callback {
 
             Image barcode = new Image(size.width, size.height, "Y800");
             barcode.setData(data);
+            barcode.setCrop((int)(size.width*0.49), (int)(size.height*0.1), (int)(size.width*0.02), (int)(size.height*0.8));
 
             if (scanner.scanImage(barcode) != 0) {
                 String qrValue = "";
@@ -452,7 +453,6 @@ implements SurfaceHolder.Callback {
                     }
                     finish();
                 }
-
             }
         }
     };

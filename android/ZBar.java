@@ -2,6 +2,7 @@ package org.cloudsky.cordovaPlugins;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import android.content.Context;
 
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.util.Log;
 
 import org.apache.cordova.PermissionHelper;
 
@@ -119,7 +121,9 @@ public class ZBar extends CordovaPlugin {
                     }else if(cancelledValue == 1){
                         scanCallbackContext.error("add_manually");
                     }else if(cancelledValue == 2){
-                        scanCallbackContext.error("per_unit");
+                        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, ImageBytes.Base64img());
+                        pluginResult.setKeepCallback(true);
+                        scanCallbackContext.sendPluginResult(pluginResult);
                     }
 
                     break;

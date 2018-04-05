@@ -389,7 +389,7 @@ implements SurfaceHolder.Callback {
                     // well with flash setting of "on"... At least with this
                     // simple and stupid focus method, we get to turn the flash
                     // on during autofocus.
-                camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
             }
             //tryStopPreview();
             //tryStartPreview();
@@ -566,7 +566,7 @@ implements SurfaceHolder.Callback {
                 //camParams.setFlashMode(Parameters.FLASH_MODE_TORCH);
 
                 try {
-                   camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                   camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
                    camera.setParameters(camParams);
                 } catch (Exception e) {
 					// TODO: don't swallow

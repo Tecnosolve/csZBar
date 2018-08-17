@@ -1,4 +1,3 @@
-package org.cloudsky.cordovaPlugins;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -7,17 +6,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
 
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import org.apache.cordova.PermissionHelper;
 
 
 import org.cloudsky.cordovaPlugins.ZBarScannerActivity;
 
+import br.com.samsclub.MainActivity;
 
 
 public class ZBar extends CordovaPlugin {
@@ -37,12 +41,21 @@ public class ZBar extends CordovaPlugin {
     private JSONObject params;
 
 
+    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+
     // Plugin API ------------------------------------------------------
+
+    private String _action;
+    private JSONArray _args;
+    private CallbackContext _callbackContext;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
             throws JSONException {
 
+        this._action = action;
+        this._args = args;
+        this._callbackContext = callbackContext;
 
         if (hasPermission()) {
             if (action.equals("scan")) {
@@ -63,10 +76,13 @@ public class ZBar extends CordovaPlugin {
                 return false;
             }
         } else {
-            PermissionHelper.requestPermissions(this, 0, permissions);
+
+            PermissionHelper.requestPermissions(this, MY_PERMISSIONS_REQUEST_CAMERA, permissions);
             return true;
         }
     }
+
+
 
 //        if(action.equals("scan")) {
 //            if(isInProgress) {
@@ -133,4 +149,23 @@ public class ZBar extends CordovaPlugin {
             scanCallbackContext = null;
         }
     }
-}
+
+    @Override
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                Log.i("Camera", "G : " + grantResults[0]);
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    this.execute(this._action, this._args, this._callbackContext);
+
+                }
+                return;
+            }
+
+        }
+    }
+
+

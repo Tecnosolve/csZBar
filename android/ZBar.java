@@ -1,3 +1,4 @@
+package org.cloudsky.cordovaPlugins;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -18,10 +19,7 @@ import android.util.Log;
 
 import org.apache.cordova.PermissionHelper;
 
-
 import org.cloudsky.cordovaPlugins.ZBarScannerActivity;
-
-import br.com.samsclub.MainActivity;
 
 
 public class ZBar extends CordovaPlugin {
@@ -167,5 +165,4 @@ public class ZBar extends CordovaPlugin {
 
         }
     }
-
-
+}

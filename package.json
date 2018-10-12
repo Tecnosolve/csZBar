@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-cszbar-tecnosolve",
-  "version": "2.0.0",
+  "version": "2.5.1",
   "description": "Plugin to integrate with the ZBar barcode scanning library.",
   "cordova": {
     "id": "cordova-plugin-cszbar-tecnosolve",

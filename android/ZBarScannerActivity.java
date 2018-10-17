@@ -76,6 +76,7 @@ implements SurfaceHolder.Callback {
     // Customisable stuff
     String whichCamera;
     String flashMode;
+    String scanProducts;
 
     // For retrieving R.* resources, from the actual app package
     // (we can't use actual.application.package.R.* in our code as we
@@ -425,8 +426,7 @@ implements SurfaceHolder.Callback {
     // Camera callbacks ------------------------------------------------
 
     // Receives frames from the camera and checks for barcodes.
-    private PreviewCallback previewCb = new PreviewCallback()
-    {
+    private PreviewCallback previewCb = new PreviewCallback() {
         public void onPreviewFrame(byte[] data, Camera camera) {
             Camera.Parameters parameters = camera.getParameters();
             Camera.Size size = parameters.getPreviewSize();
@@ -442,20 +442,64 @@ implements SurfaceHolder.Callback {
                 for (Symbol sym : syms) {
                     qrValue = sym.getData();
 
-                    // Return 1st found QR code value to the calling Activity.
-                    Intent result = new Intent ();
-                    result.putExtra(EXTRA_QRVALUE, qrValue);
-                    setResult(Activity.RESULT_OK, result);
-                    if (!beep){
-                        beep=true;
-                        ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-                        generator.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                    if ( scanProducts.equals("off") || checkEAN(qrValue)){
+                        // Return 1st found QR code value to the calling Activity.
+                        Intent result = new Intent ();
+                        result.putExtra(EXTRA_QRVALUE, qrValue);
+                        setResult(Activity.RESULT_OK, result);
+                        if (!beep){
+                            beep=true;
+                            ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+                            generator.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                        }
+                        finish();
                     }
-                    finish();
                 }
             }
         }
     };
+
+    public boolean checkEAN(String barCode){
+
+        int pair = 0;
+        int odd = 0;
+        int verifyingDigit = Integer.parseInt(barCode.substring(barCode.length() - 1));
+        int auxiliary = 0;
+        int sum = 0;
+
+        if (this.checkBarCodeSize(barCode)) {
+
+            for (int i = 0; i < (barCode.length() - 1); i++) {
+                if ((i +1) % 2 == 0) {
+                    pair += Integer.parseInt(String.valueOf(barCode.charAt(i)));
+                } else {
+                    odd += Integer.parseInt(String.valueOf(barCode.charAt(i)));
+                }
+            }
+
+            sum = (pair * 3) + odd;
+            auxiliary = sum;
+            auxiliary += 10 - (auxiliary%10);
+            auxiliary -= sum;
+        }
+
+        return (auxiliary == verifyingDigit);
+
+    }
+
+    public boolean checkBarCodeSize(String barCode) {
+        boolean r = true;
+        if (barCode.length() == 8) {  //EAN-8
+            barCode = "00000" + barCode;
+        } else if (barCode.length() == 13) { //EAN-13
+            barCode = barCode;
+        } else {
+            if (barCode.length() != 18) { //SSCC
+                r = false;
+            }
+        }
+        return r;
+    }
 
     // Misc ------------------------------------------------------------
 

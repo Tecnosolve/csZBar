@@ -10,5 +10,6 @@
 - (void)addManually;
 - (void)perUnitButtonPressed;
 - (void)cancelAndDismiss;
-
+- (bool)checkEAN: (NSString *)barCode;
+- (bool)checkBarCodeSize: (NSString*)barCode;
 @end

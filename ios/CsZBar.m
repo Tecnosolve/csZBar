@@ -18,8 +18,9 @@
 @interface CsZBar ()
 @property bool scanInProgress;
 @property NSString *scanCallbackId;
+@property NSString *barCode;
 @property AlmaZBarReaderViewController *scanReader;
-
+@property bool scanProducts;
 @end
 
 #pragma mark - Synthesize
@@ -28,7 +29,10 @@
 
 @synthesize scanInProgress;
 @synthesize scanCallbackId;
+@synthesize barCode;
 @synthesize scanReader;
+@synthesize scanProducts;
+
 
 #pragma mark - Cordova Plugin
 
@@ -89,15 +93,16 @@
         // } else {
         //     infoButtonIndex = 3;
         // }
-        
+
         //UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem]; [button setTitle:@"Press Me" forState:UIControlStateNormal]; [button sizeToFit]; [self.view addSubview:button];
         CGRect screenRect = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenRect.size.width;
         CGFloat screenHeight = screenRect.size.height;
 
-        //BOOL drawFlashToggleButton = [params objectForKey:@"drawFlashToggleButton"] ? [[params objectForKey:@"drawFlashToggleButton"] boolValue] : false;
+        BOOL drawFlashToggleButton = [params objectForKey:@"drawFlashToggleButton"] ? [[params objectForKey:@"drawFlashToggleButton"] boolValue] : false;
         BOOL drawPerUnitButton = [params objectForKey:@"drawPerUnitButton"] ? [[params objectForKey:@"drawPerUnitButton"] boolValue] : false;
-        
+        self.scanProducts = [params objectForKey:@"scanProducts"] ? [[params objectForKey:@"scanProducts"] boolValue] : false;
+
         UIToolbar *toolbarView = [[UIToolbar alloc] init];
         toolbarView.frame = CGRectMake(0.0, 0, screenWidth, 44.0);
         toolbarView.barStyle = UIBarStyleBlackOpaque;
@@ -105,16 +110,16 @@
         UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
         UIBarButtonItem *buttonCancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancelar" style:UIBarButtonItemStyleDone target:self action:@selector(cancelAndDismiss)];
 
-        // if(drawFlashToggleButton){
+         if(drawFlashToggleButton){
 
-        //     //The bar length it depends on the orientation
-        //     UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Ativar Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
-        //     NSMutableArray *buttons = [NSMutableArray arrayWithObjects: buttonFlash, flexible, buttonCancel, nil];
-        //     [toolbarView setItems:buttons animated:NO];
-        //     [self.scanReader.view addSubview:toolbarView];
+             //The bar length it depends on the orientation
+             UIBarButtonItem *buttonFlash = [[UIBarButtonItem alloc] initWithTitle:@"Ativar Flash" style:UIBarButtonItemStyleDone target:self action:@selector(toggleflash)];
+             NSMutableArray *buttons = [NSMutableArray arrayWithObjects: buttonFlash, flexible, buttonCancel, nil];
+             [toolbarView setItems:buttons animated:NO];
+             [self.scanReader.view addSubview:toolbarView];
 
 
-        // }
+         }
         if(drawPerUnitButton){
 
             //The bar length it depends on the orientation
@@ -125,16 +130,16 @@
 
 
         }else{
-            
+
             NSMutableArray *buttons = [NSMutableArray arrayWithObjects: flexible, buttonCancel, nil];
             [toolbarView setItems:buttons animated:NO];
             [self.scanReader.view addSubview:toolbarView];
-        
+
         }
 
         BOOL drawAddManuallyButton = [params objectForKey:@"drawAddManuallyButton"] ? [[params objectForKey:@"drawAddManuallyButton"] boolValue] : false;
 
-        //if (drawAddManuallyButton) {
+        if (drawAddManuallyButton) {
 
             UIButton *addManuallyButton = [[UIButton alloc] initWithFrame:CGRectMake(0, screenHeight - 50, screenWidth, 50)];
             addManuallyButton.backgroundColor = UIColorFromRGB(0x76c043);
@@ -146,7 +151,7 @@
             [self.scanReader.view addSubview:addManuallyButton];
             [self.scanReader.view bringSubviewToFront: addManuallyButton];
 
-        //}
+        }
 
         BOOL drawSight = [params objectForKey:@"drawSight"] ? [[params objectForKey:@"drawSight"] boolValue] : false;
 
@@ -194,7 +199,7 @@
 }
 
 - (void)perUnitButtonPressed{
-    
+
     [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
         self.scanInProgress = NO;
         [self sendScanResult: [CDVPluginResult
@@ -224,16 +229,60 @@
 
     ZBarSymbol *symbol = nil;
     for (symbol in results) break; // get the first result
+    self.barCode = symbol.data;
 
-    ToneGenerator *toneGenerator = [[ToneGenerator alloc] init];
-    [toneGenerator playFrequency:BASE forDuration:TRANSMIT_LENGTH];
+    if(!self.scanProducts || [self checkEAN:symbol.data]){
 
-    [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
-        self.scanInProgress = NO;
-        [self sendScanResult: [CDVPluginResult
-                               resultWithStatus: CDVCommandStatus_OK
-                               messageAsString: symbol.data]];
-    }];
+        ToneGenerator *toneGenerator = [[ToneGenerator alloc] init];
+        [toneGenerator playFrequency:BASE forDuration:TRANSMIT_LENGTH];
+
+        [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
+            self.scanInProgress = NO;
+            [self sendScanResult: [CDVPluginResult
+                                   resultWithStatus: CDVCommandStatus_OK
+                                   messageAsString: symbol.data]];
+        }];
+    }
+}
+
+- (bool) checkEAN: (NSString *)barCode{
+
+    NSInteger pair = 0;
+    NSInteger odd = 0;
+    NSInteger verifyingDigit = [[barCode substringFromIndex: [barCode length] - 1] integerValue];
+    NSInteger auxiliary = 0;
+    NSInteger sum = 0;
+
+    if ([self checkBarCodeSize:barCode]) {
+
+        for (int i = 0; i < ([self.barCode length] - 1); i++) {
+            if ((i +1) % 2 == 0) {
+                pair += [[self.barCode substringWithRange:NSMakeRange(i, 1)] integerValue];
+            } else {
+                odd += [[self.barCode substringWithRange:NSMakeRange(i, 1)] integerValue];
+            }
+        }
+
+        sum = (pair * 3) + odd;
+        auxiliary = sum;
+        auxiliary += 10 - (auxiliary%10);
+        auxiliary -= sum;
+    }
+
+    return (auxiliary == verifyingDigit);
+
+}
+
+- (bool) checkBarCodeSize:(NSString *)barCode{
+    bool r = false;
+    if ([barCode length] == 8) {  //EAN-8
+        self.barCode = [NSString stringWithFormat:@"%@%@", @"00000", barCode];
+        r = true;
+    } else if ([barCode length] == 13) { //EAN-13
+        self.barCode = barCode;
+        r = true;
+    }
+    return r;
 }
 
 - (void) cancelAndDismiss {

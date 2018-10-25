@@ -76,7 +76,7 @@ implements SurfaceHolder.Callback {
     // Customisable stuff
     String whichCamera;
     String flashMode;
-    String scanProducts;
+    Boolean scanProducts;
 
     // For retrieving R.* resources, from the actual app package
     // (we can't use actual.application.package.R.* in our code as we
@@ -144,6 +144,7 @@ implements SurfaceHolder.Callback {
             String textTitle = params.optString("text_title");
             String textInstructions = params.optString("text_instructions");
             Boolean drawSight = params.optBoolean("drawSight", true);
+	    this.scanProducts = params.optBoolean("scanProducts", false);
             Boolean drawPerUnitButton = params.optBoolean("drawPerUnitButton", false);
             whichCamera = params.optString("camera");
             flashMode = params.optString("flash");
@@ -442,7 +443,7 @@ implements SurfaceHolder.Callback {
                 for (Symbol sym : syms) {
                     qrValue = sym.getData();
 
-                    if ( scanProducts.equals("off") || checkEAN(qrValue)){
+                    if ( !scanProducts || checkEAN(qrValue)){
                         // Return 1st found QR code value to the calling Activity.
                         Intent result = new Intent ();
                         result.putExtra(EXTRA_QRVALUE, qrValue);

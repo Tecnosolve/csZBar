@@ -231,18 +231,18 @@
     for (symbol in results) break; // get the first result
     self.barCode = symbol.data;
 
-    if(!self.scanProducts || [self checkEAN:symbol.data]){
+    // if(!self.scanProducts || [self checkEAN:symbol.data]){
 
-        ToneGenerator *toneGenerator = [[ToneGenerator alloc] init];
-        [toneGenerator playFrequency:BASE forDuration:TRANSMIT_LENGTH];
+    ToneGenerator *toneGenerator = [[ToneGenerator alloc] init];
+    [toneGenerator playFrequency:BASE forDuration:TRANSMIT_LENGTH];
 
-        [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
-            self.scanInProgress = NO;
-            [self sendScanResult: [CDVPluginResult
-                                   resultWithStatus: CDVCommandStatus_OK
-                                   messageAsString: symbol.data]];
-        }];
-    }
+    [self.scanReader dismissViewControllerAnimated: YES completion: ^(void) {
+        self.scanInProgress = NO;
+        [self sendScanResult: [CDVPluginResult
+                               resultWithStatus: CDVCommandStatus_OK
+                               messageAsString: symbol.data]];
+    }];
+    //}
 }
 
 - (bool) checkEAN: (NSString *)barCode{

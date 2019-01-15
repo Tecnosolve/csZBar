@@ -47,7 +47,7 @@ import net.sourceforge.zbar.SymbolSet;
 import net.sourceforge.zbar.Config;
 
 public class ZBarScannerActivity extends Activity
-implements SurfaceHolder.Callback {
+        implements SurfaceHolder.Callback {
 
     //for barcode types
     private Collection<ZBarcodeFormat> mFormats = null;
@@ -101,7 +101,7 @@ implements SurfaceHolder.Callback {
 //
 //        if(permissionCheck == PackageManager.PERMISSION_GRANTED){
 //
-            setUpCamera();
+        setUpCamera();
 //
 //        } else {
 //
@@ -122,7 +122,7 @@ implements SurfaceHolder.Callback {
                     setUpCamera();
                 } else {
 
-                   onBackPressed();
+                    onBackPressed();
                 }
                 return;
             }
@@ -135,76 +135,76 @@ implements SurfaceHolder.Callback {
         // If request is cancelled, the result arrays are empty.
 
 
-            // Get parameters from JS
-            Intent startIntent = getIntent();
-            String paramStr = startIntent.getStringExtra(EXTRA_PARAMS);
-            JSONObject params;
-            try { params = new JSONObject(paramStr); }
-            catch (JSONException e) { params = new JSONObject(); }
-            String textTitle = params.optString("text_title");
-            String textInstructions = params.optString("text_instructions");
-            Boolean drawSight = params.optBoolean("drawSight", true);
-	    this.scanProducts = params.optBoolean("scanProducts", false);
-            Boolean drawPerUnitButton = params.optBoolean("drawPerUnitButton", false);
-            whichCamera = params.optString("camera");
-            flashMode = params.optString("flash");
+        // Get parameters from JS
+        Intent startIntent = getIntent();
+        String paramStr = startIntent.getStringExtra(EXTRA_PARAMS);
+        JSONObject params;
+        try { params = new JSONObject(paramStr); }
+        catch (JSONException e) { params = new JSONObject(); }
+        String textTitle = params.optString("text_title");
+        String textInstructions = params.optString("text_instructions");
+        Boolean drawSight = params.optBoolean("drawSight", true);
+        this.scanProducts = params.optBoolean("scanProducts", false);
+        Boolean drawPerUnitButton = params.optBoolean("drawPerUnitButton", false);
+        whichCamera = params.optString("camera");
+        flashMode = params.optString("flash");
 
-            // Initiate instance variables
-            autoFocusHandler = new Handler();
-            scanner = new ImageScanner();
-            scanner.setConfig(0, Config.X_DENSITY, 3);
-            scanner.setConfig(0, Config.Y_DENSITY, 3);
+        // Initiate instance variables
+        autoFocusHandler = new Handler();
+        scanner = new ImageScanner();
+        scanner.setConfig(0, Config.X_DENSITY, 3);
+        scanner.setConfig(0, Config.Y_DENSITY, 3);
 
-            // Set the config for barcode formats
-            for(ZBarcodeFormat format : getFormats()) {
-                scanner.setConfig(format.getId(), Config.ENABLE, 1);
+        // Set the config for barcode formats
+        for(ZBarcodeFormat format : getFormats()) {
+            scanner.setConfig(format.getId(), Config.ENABLE, 1);
+        }
+
+        // Set content view
+        setContentView(getResourceId("layout/cszbarscanner"));
+
+        // Update view with customisable strings
+        TextView view_textTitle = (TextView) findViewById(getResourceId("id/csZbarScannerTitle"));
+        TextView view_textInstructions = (TextView) findViewById(getResourceId("id/csZbarScannerInstructions"));
+        view_textTitle.setText(textTitle);
+        view_textInstructions.setText(textInstructions);
+
+        if(!drawPerUnitButton){
+            ImageButton perUnitButton = (ImageButton) findViewById(getResourceId("id/imageButton"));
+            perUnitButton.setVisibility(View.INVISIBLE);
+        }
+
+        // Draw/hide the sight
+        if(!drawSight) {
+            findViewById(getResourceId("id/csZbarScannerSight")).setVisibility(View.INVISIBLE);
+        }
+
+        // Create preview SurfaceView
+        scannerSurface = new SurfaceView (this) {
+            @Override
+            public void onSizeChanged (int w, int h, int oldW, int oldH) {
+                surfW = w;
+                surfH = h;
+                matchSurfaceToPreviewRatio();
             }
+        };
+        scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER
+        ));
+        scannerSurface.getHolder().addCallback(this);
 
-            // Set content view
-            setContentView(getResourceId("layout/cszbarscanner"));
+        // Add preview SurfaceView to the screen
+        FrameLayout scannerView = (FrameLayout) findViewById(getResourceId("id/csZbarScannerView"));
+        scannerView.addView(scannerSurface);
 
-            // Update view with customisable strings
-            TextView view_textTitle = (TextView) findViewById(getResourceId("id/csZbarScannerTitle"));
-            TextView view_textInstructions = (TextView) findViewById(getResourceId("id/csZbarScannerInstructions"));
-            view_textTitle.setText(textTitle);
-            view_textInstructions.setText(textInstructions);
-
-            if(!drawPerUnitButton){
-                ImageButton perUnitButton = (ImageButton) findViewById(getResourceId("id/imageButton"));
-                perUnitButton.setVisibility(View.INVISIBLE);
-            }
-
-            // Draw/hide the sight
-            if(!drawSight) {
-                findViewById(getResourceId("id/csZbarScannerSight")).setVisibility(View.INVISIBLE);
-            }
-
-            // Create preview SurfaceView
-            scannerSurface = new SurfaceView (this) {
-                @Override
-                public void onSizeChanged (int w, int h, int oldW, int oldH) {
-                    surfW = w;
-                    surfH = h;
-                    matchSurfaceToPreviewRatio();
-                }
-            };
-            scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    Gravity.CENTER
-            ));
-            scannerSurface.getHolder().addCallback(this);
-
-            // Add preview SurfaceView to the screen
-            FrameLayout scannerView = (FrameLayout) findViewById(getResourceId("id/csZbarScannerView"));
-            scannerView.addView(scannerSurface);
-
-            findViewById(getResourceId("id/csZbarScannerTitle")).bringToFront();
-            findViewById(getResourceId("id/csZbarScannerInstructions")).bringToFront();
-            findViewById(getResourceId("id/csZbarScannerSightContainer")).bringToFront();
-            findViewById(getResourceId("id/csZbarScannerSight")).bringToFront();
-            scannerView.requestLayout();
-            scannerView.invalidate();
+        findViewById(getResourceId("id/csZbarScannerTitle")).bringToFront();
+        findViewById(getResourceId("id/csZbarScannerInstructions")).bringToFront();
+        findViewById(getResourceId("id/csZbarScannerSightContainer")).bringToFront();
+        findViewById(getResourceId("id/csZbarScannerSight")).bringToFront();
+        scannerView.requestLayout();
+        scannerView.invalidate();
 
     }
 
@@ -234,7 +234,7 @@ implements SurfaceHolder.Callback {
             //die("Error: Could not open the camera.");
             return;
         } catch (Exception e) {
-           // die(e.getMessage());
+            // die(e.getMessage());
             return;
         }
     }
@@ -340,25 +340,25 @@ implements SurfaceHolder.Callback {
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         switch(rotation)
         {
-        case 0: // '\0'
-            rotation = 90;
-            break;
+            case 0: // '\0'
+                rotation = 90;
+                break;
 
-        case 1: // '\001'
-            rotation = 0;
-            break;
+            case 1: // '\001'
+                rotation = 0;
+                break;
 
-        case 2: // '\002'
-            rotation = 270;
-            break;
+            case 2: // '\002'
+                rotation = 270;
+                break;
 
-        case 3: // '\003'
-            rotation = 180;
-            break;
+            case 3: // '\003'
+                rotation = 180;
+                break;
 
-        default:
-            rotation = 90;
-            break;
+            default:
+                rotation = 90;
+                break;
         }
         camera.setDisplayOrientation(rotation);
         android.hardware.Camera.Parameters params = camera.getParameters();
@@ -368,7 +368,7 @@ implements SurfaceHolder.Callback {
     }
 
     public void toggleFlash(View view) {
-		camera.startPreview();
+        camera.startPreview();
         android.hardware.Camera.Parameters camParams = camera.getParameters();
         //If the flash is set to off
         try {
@@ -380,17 +380,17 @@ implements SurfaceHolder.Callback {
 
         }
 
-		try {
-           // camera.setParameters(camParams);
+        try {
+            // camera.setParameters(camParams);
             camera.setPreviewDisplay(holder);
             camera.setPreviewCallback(previewCb);
             camera.startPreview();
             if (android.os.Build.VERSION.SDK_INT >= 14) {
                 camera.autoFocus(autoFocusCb); // We are not using any of the
-                    // continuous autofocus modes as that does not seem to work
-                    // well with flash setting of "on"... At least with this
-                    // simple and stupid focus method, we get to turn the flash
-                    // on during autofocus.
+                // continuous autofocus modes as that does not seem to work
+                // well with flash setting of "on"... At least with this
+                // simple and stupid focus method, we get to turn the flash
+                // on during autofocus.
                 camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
             }
             //tryStopPreview();
@@ -400,8 +400,8 @@ implements SurfaceHolder.Callback {
         } catch(RuntimeException e) {
             Log.d("csZBar", (new StringBuilder("Unsupported camera parameter reported for flash mode: ")).append(flashMode).toString());
         } catch (IOException e) {
-        	Log.d("csZBar", (new StringBuilder("Wrong holder data")).append(flashMode).toString());
-		}
+            Log.d("csZBar", (new StringBuilder("Wrong holder data")).append(flashMode).toString());
+        }
     }
     // Continuously auto-focus -----------------------------------------
     // For API Level < 14
@@ -443,18 +443,18 @@ implements SurfaceHolder.Callback {
                 for (Symbol sym : syms) {
                     qrValue = sym.getData();
 
-                    if ( !scanProducts || checkEAN(qrValue)){
-                        // Return 1st found QR code value to the calling Activity.
-                        Intent result = new Intent ();
-                        result.putExtra(EXTRA_QRVALUE, qrValue);
-                        setResult(Activity.RESULT_OK, result);
-                        if (!beep){
-                            beep=true;
-                            ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-                            generator.startTone(ToneGenerator.TONE_CDMA_PIP,150);
-                        }
-                        finish();
+                    //   if ( !scanProducts || checkEAN(qrValue)){
+                    // Return 1st found QR code value to the calling Activity.
+                    Intent result = new Intent ();
+                    result.putExtra(EXTRA_QRVALUE, qrValue);
+                    setResult(Activity.RESULT_OK, result);
+                    if (!beep){
+                        beep=true;
+                        ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+                        generator.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                     }
+                    finish();
+                    //   }
                 }
             }
         }
@@ -492,6 +492,8 @@ implements SurfaceHolder.Callback {
         boolean r = true;
         if (barCode.length() == 8) {  //EAN-8
             barCode = "00000" + barCode;
+        } else if (barCode.length() == 12) { //EAN-13
+            barCode = "0" + barCode;
         } else if (barCode.length() == 13) { //EAN-13
             barCode = barCode;
         } else {
@@ -543,15 +545,15 @@ implements SurfaceHolder.Callback {
 
         if(previewRatio > surfaceRatio) {
             scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                surfW,
-                Math.round((float) surfW / previewRatio),
-                Gravity.CENTER
+                    surfW,
+                    Math.round((float) surfW / previewRatio),
+                    Gravity.CENTER
             ));
         } else if(previewRatio < surfaceRatio) {
             scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                Math.round((float) surfH * previewRatio),
-                surfH,
-                Gravity.CENTER
+                    Math.round((float) surfH * previewRatio),
+                    surfH,
+                    Gravity.CENTER
             ));
         }
     }
@@ -562,7 +564,7 @@ implements SurfaceHolder.Callback {
         try {
             camera.stopPreview();
         } catch (Exception e){
-          // Preview was not running. Ignore the error.
+            // Preview was not running. Ignore the error.
         }
     }
 
@@ -582,28 +584,28 @@ implements SurfaceHolder.Callback {
                 int rotation = getWindowManager().getDefaultDisplay().getRotation();
                 switch(rotation)
                 {
-                case 0: // '\0'
-                    rotation = 90;
-                    break;
+                    case 0: // '\0'
+                        rotation = 90;
+                        break;
 
-                case 1: // '\001'
-                    rotation = 0;
-                    break;
+                    case 1: // '\001'
+                        rotation = 0;
+                        break;
 
-                case 2: // '\002'
-                    rotation = 270;
-                    break;
+                    case 2: // '\002'
+                        rotation = 270;
+                        break;
 
-                case 3: // '\003'
-                    rotation = 180;
-                    break;
+                    case 3: // '\003'
+                        rotation = 180;
+                        break;
 
-                default:
-                    rotation = 90;
-                    break;
+                    default:
+                        rotation = 90;
+                        break;
                 }
                 // 90 degrees rotation for Portrait orientation Activity.
-               // camera.setDisplayOrientation(rotation);
+                // camera.setDisplayOrientation(rotation);
                 setCameraDisplayOrientation(this, 0);
 
                 android.hardware.Camera.Parameters camParams = camera.getParameters();
@@ -611,10 +613,10 @@ implements SurfaceHolder.Callback {
                 //camParams.setFlashMode(Parameters.FLASH_MODE_TORCH);
 
                 try {
-                   camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
-                   camera.setParameters(camParams);
+                    camParams.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
+                    camera.setParameters(camParams);
                 } catch (Exception e) {
-					// TODO: don't swallow
+                    // TODO: don't swallow
                 }
 
                 camera.setPreviewDisplay(holder);
@@ -623,10 +625,10 @@ implements SurfaceHolder.Callback {
 
                 if (android.os.Build.VERSION.SDK_INT >= 14) {
                     camera.autoFocus(autoFocusCb); // We are not using any of the
-                        // continuous autofocus modes as that does not seem to work
-                        // well with flash setting of "on"... At least with this
-                        // simple and stupid focus method, we get to turn the flash
-                        // on during autofocus.
+                    // continuous autofocus modes as that does not seem to work
+                    // well with flash setting of "on"... At least with this
+                    // simple and stupid focus method, we get to turn the flash
+                    // on during autofocus.
                 }
             } catch (IOException e) {
                 die("Could not start camera preview: " + e.getMessage());

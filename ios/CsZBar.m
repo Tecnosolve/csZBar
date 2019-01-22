@@ -168,6 +168,14 @@
 
         self.scanReader.scanCrop = CGRectMake(0.49, 0.10, 0.02, 0.8);
 
+        [self.scanReader.scanner setSymbology: ZBAR_NONE config: ZBAR_CFG_ENABLE to: 0];
+        [self.scanReader.scanner setSymbology: ZBAR_EAN2 config: ZBAR_CFG_ENABLE to: 1];
+        [self.scanReader.scanner setSymbology: ZBAR_EAN5 config: ZBAR_CFG_ENABLE to: 1];
+        [self.scanReader.scanner setSymbology: ZBAR_EAN8 config: ZBAR_CFG_ENABLE to: 1];
+        [self.scanReader.scanner setSymbology: ZBAR_EAN13 config: ZBAR_CFG_ENABLE to: 1];
+        [self.scanReader.scanner setSymbology: ZBAR_UPCA config: ZBAR_CFG_ENABLE to: 1];
+        [self.scanReader.scanner setSymbology: ZBAR_UPCE config: ZBAR_CFG_ENABLE to: 1];
+
         [self.viewController presentViewController:self.scanReader animated:YES completion:nil];
     }
 }

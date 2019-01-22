@@ -468,13 +468,15 @@ public class ZBarScannerActivity extends Activity
         int auxiliary = 0;
         int sum = 0;
 
-        if (this.checkBarCodeSize(barCode)) {
+        String barCodeWithZero = "";
 
-            for (int i = 0; i < (barCode.length() - 1); i++) {
+        if (this.checkBarCodeSize(barCode)) {
+            barCodeWithZero = this.addleftZero(barCode);
+            for (int i = 0; i < (barCodeWithZero.length() - 1); i++) {
                 if ((i +1) % 2 == 0) {
-                    pair += Integer.parseInt(String.valueOf(barCode.charAt(i)));
+                    pair += Integer.parseInt(String.valueOf(barCodeWithZero.charAt(i)));
                 } else {
-                    odd += Integer.parseInt(String.valueOf(barCode.charAt(i)));
+                    odd += Integer.parseInt(String.valueOf(barCodeWithZero.charAt(i)));
                 }
             }
 
@@ -482,26 +484,39 @@ public class ZBarScannerActivity extends Activity
             auxiliary = sum;
             auxiliary += 10 - (auxiliary%10);
             auxiliary -= sum;
+            if(auxiliary==10){
+                auxiliary=0;
+            }
+
         }
 
         return (auxiliary == verifyingDigit);
 
     }
 
-    public boolean checkBarCodeSize(String barCode) {
-        boolean r = true;
+    private boolean checkBarCodeSize(String barCode){
+        if (barCode.length() == 8) {  //EAN-8
+            return true;
+        }else if (barCode.length() == 12) {  //EAN-8
+            return true;
+        } else if (barCode.length() == 13) { //EAN-13
+            return true;
+        } else if  (barCode.length() == 18){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private String addleftZero(String barCode) {
         if (barCode.length() == 8) {  //EAN-8
             barCode = "00000" + barCode;
-        } else if (barCode.length() == 12) { //EAN-13
+        }else if (barCode.length() == 12) {  //EAN-8
             barCode = "0" + barCode;
         } else if (barCode.length() == 13) { //EAN-13
-            barCode = barCode;
-        } else {
-            if (barCode.length() != 18) { //SSCC
-                r = false;
-            }
+            // barCode = barCode;
         }
-        return r;
+        return barCode;
     }
 
     // Misc ------------------------------------------------------------

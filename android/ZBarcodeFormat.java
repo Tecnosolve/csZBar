@@ -30,22 +30,22 @@ public class ZBarcodeFormat {
     public static final List<ZBarcodeFormat> ALL_FORMATS = new ArrayList<ZBarcodeFormat>();
 
     static {
-        ALL_FORMATS.add(ZBarcodeFormat.PARTIAL);
+        //  ALL_FORMATS.add(ZBarcodeFormat.PARTIAL);
         ALL_FORMATS.add(ZBarcodeFormat.EAN8);
         ALL_FORMATS.add(ZBarcodeFormat.UPCE);
-        ALL_FORMATS.add(ZBarcodeFormat.ISBN10);
+        //   ALL_FORMATS.add(ZBarcodeFormat.ISBN10);
         ALL_FORMATS.add(ZBarcodeFormat.UPCA);
         ALL_FORMATS.add(ZBarcodeFormat.EAN13);
-        ALL_FORMATS.add(ZBarcodeFormat.ISBN13);
-        ALL_FORMATS.add(ZBarcodeFormat.I25);
-        ALL_FORMATS.add(ZBarcodeFormat.DATABAR);
-        ALL_FORMATS.add(ZBarcodeFormat.DATABAR_EXP);
-        ALL_FORMATS.add(ZBarcodeFormat.CODABAR);
-        ALL_FORMATS.add(ZBarcodeFormat.CODE39);
-        ALL_FORMATS.add(ZBarcodeFormat.PDF417);
-        ALL_FORMATS.add(ZBarcodeFormat.QRCODE);
-        ALL_FORMATS.add(ZBarcodeFormat.CODE93);
-        ALL_FORMATS.add(ZBarcodeFormat.CODE128);
+        //   ALL_FORMATS.add(ZBarcodeFormat.ISBN13);
+        //   ALL_FORMATS.add(ZBarcodeFormat.I25);
+        //   ALL_FORMATS.add(ZBarcodeFormat.DATABAR);
+        //   ALL_FORMATS.add(ZBarcodeFormat.DATABAR_EXP);
+        //   ALL_FORMATS.add(ZBarcodeFormat.CODABAR);
+        //   ALL_FORMATS.add(ZBarcodeFormat.CODE39);
+        //   ALL_FORMATS.add(ZBarcodeFormat.PDF417);
+        //   ALL_FORMATS.add(ZBarcodeFormat.QRCODE);
+        //   ALL_FORMATS.add(ZBarcodeFormat.CODE93);
+        //   ALL_FORMATS.add(ZBarcodeFormat.CODE128);
     }
 
     public ZBarcodeFormat(int id, String name) {

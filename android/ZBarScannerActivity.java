@@ -2,6 +2,8 @@ package org.cloudsky.cordovaPlugins;
 
 import java.io.IOException;
 import java.lang.RuntimeException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,6 +79,7 @@ public class ZBarScannerActivity extends Activity
     String whichCamera;
     String flashMode;
     Boolean scanProducts;
+    JSONArray formats_android;
 
     // For retrieving R.* resources, from the actual app package
     // (we can't use actual.application.package.R.* in our code as we
@@ -148,6 +151,8 @@ public class ZBarScannerActivity extends Activity
         Boolean drawPerUnitButton = params.optBoolean("drawPerUnitButton", false);
         whichCamera = params.optString("camera");
         flashMode = params.optString("flash");
+        this.formats_android = params.optJSONArray("formats_android");
+
 
         // Initiate instance variables
         autoFocusHandler = new Handler();
@@ -155,9 +160,21 @@ public class ZBarScannerActivity extends Activity
         scanner.setConfig(0, Config.X_DENSITY, 3);
         scanner.setConfig(0, Config.Y_DENSITY, 3);
 
+
+        scanner.setConfig(ZBarcodeFormat.NONE.getId(), Config.ENABLE, 0);
+
+
         // Set the config for barcode formats
-        for(ZBarcodeFormat format : getFormats()) {
-            scanner.setConfig(format.getId(), Config.ENABLE, 1);
+
+        scanner.setConfig(0, Config.ENABLE, 0);
+
+        for(ZBarcodeFormat format : getFormats()) { //get all formats
+            for(int i=0; i<formats_android.length();i++){
+                if(formats_android.optString(i).contentEquals(format.getName())) { //enabled only  some pass by param
+                    scanner.setConfig(format.getId(), Config.ENABLE, 1);
+                }
+            }
+
         }
 
         // Set content view

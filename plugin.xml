@@ -26,7 +26,7 @@
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
                 android:name="org.cloudsky.cordovaPlugins.ZBarScannerActivity"
-                android:screenOrientation="fullUser"
+                android:screenOrientation="portrait"
                 android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/manifest">

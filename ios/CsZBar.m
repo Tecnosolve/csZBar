@@ -168,13 +168,61 @@
 
         self.scanReader.scanCrop = CGRectMake(0.49, 0.10, 0.02, 0.8);
 
+        NSArray *formats = [params objectForKey:@"formats_iOS"];
+
         [self.scanReader.scanner setSymbology: ZBAR_NONE config: ZBAR_CFG_ENABLE to: 0];
-        [self.scanReader.scanner setSymbology: ZBAR_EAN2 config: ZBAR_CFG_ENABLE to: 1];
-        [self.scanReader.scanner setSymbology: ZBAR_EAN5 config: ZBAR_CFG_ENABLE to: 1];
-        [self.scanReader.scanner setSymbology: ZBAR_EAN8 config: ZBAR_CFG_ENABLE to: 1];
-        [self.scanReader.scanner setSymbology: ZBAR_EAN13 config: ZBAR_CFG_ENABLE to: 1];
-        [self.scanReader.scanner setSymbology: ZBAR_UPCA config: ZBAR_CFG_ENABLE to: 1];
-        [self.scanReader.scanner setSymbology: ZBAR_UPCE config: ZBAR_CFG_ENABLE to: 1];
+
+        if([formats containsObject:@"EAN2"]){
+            [self.scanReader.scanner setSymbology: ZBAR_EAN2 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"EAN5"]){
+            [self.scanReader.scanner setSymbology: ZBAR_EAN5 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"EAN8"]){
+            [self.scanReader.scanner setSymbology: ZBAR_EAN8 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"EAN13"]){
+            [self.scanReader.scanner setSymbology: ZBAR_EAN13 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"UPCA"]){
+            [self.scanReader.scanner setSymbology: ZBAR_UPCA config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"UPCE"]){
+            [self.scanReader.scanner setSymbology: ZBAR_UPCE config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"ISBN10"]){
+            [self.scanReader.scanner setSymbology: ZBAR_ISBN10 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"ISBN13"]){
+            [self.scanReader.scanner setSymbology: ZBAR_ISBN13 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"COMPOSITE"]){
+            [self.scanReader.scanner setSymbology: ZBAR_COMPOSITE config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"I25"]){
+            [self.scanReader.scanner setSymbology: ZBAR_I25 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"DATABAR"]){
+            [self.scanReader.scanner setSymbology: ZBAR_DATABAR config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"DATABAR_EXP"]){
+            [self.scanReader.scanner setSymbology: ZBAR_DATABAR_EXP config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"CODE39"]){
+            [self.scanReader.scanner setSymbology: ZBAR_CODE39 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"PDF417"]){
+            [self.scanReader.scanner setSymbology: ZBAR_PDF417 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"QRCODE"]){
+            [self.scanReader.scanner setSymbology: ZBAR_QRCODE config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"CODE93"]){
+            [self.scanReader.scanner setSymbology: ZBAR_CODE93 config: ZBAR_CFG_ENABLE to: 1];
+        }
+        if([formats containsObject:@"CODE128"]){
+            [self.scanReader.scanner setSymbology: ZBAR_CODE128 config: ZBAR_CFG_ENABLE to: 1];
+        }
 
         [self.viewController presentViewController:self.scanReader animated:YES completion:nil];
     }

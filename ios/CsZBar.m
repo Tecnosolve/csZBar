@@ -223,7 +223,8 @@
         if([formats containsObject:@"CODE128"]){
             [self.scanReader.scanner setSymbology: ZBAR_CODE128 config: ZBAR_CFG_ENABLE to: 1];
         }
-
+        
+        [self.scanReader setModalPresentationStyle: UIModalPresentationFullScreen];
         [self.viewController presentViewController:self.scanReader animated:YES completion:nil];
     }
 }

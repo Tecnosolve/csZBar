@@ -1,7 +1,3 @@
-**This repository is looking for a maintainer! If you believe you are the right person, please [leave a comment](https://github.com/tjwoon/csZBar/issues/60)!**
-
-
-
 # ZBar Barcode Scanner Plugin
 
 This plugin integrates with the [ZBar](http://zbar.sourceforge.net/) library,
@@ -10,7 +6,7 @@ In this fork a button has been added to turn off and on device flash. In additio
 
 ## Installation
 
-    cordova plugin add cordova-plugin-cszbar
+    cordova plugin add @tecnosolve/cordova-plugin-cszbar
 
 ## API
 
